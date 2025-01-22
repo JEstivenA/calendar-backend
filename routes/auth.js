@@ -5,6 +5,10 @@
 */
 
 const express = require("express");
+const { check } = require("express-validator");
+
+const { validateFields } = require("../middlewares/field-validators");
+
 const router = express.Router();
 const { createUser, loginUser, renewToken } = require("../controllers/auth");
 
@@ -14,7 +18,16 @@ const { createUser, loginUser, renewToken } = require("../controllers/auth");
  * @access  Public
  *
  */
-router.post("/new", createUser);
+router.post(
+  "/new",
+  [
+    check("name", "The name is required").not().isEmpty(),
+    check("email", "The email is required").isEmail(),
+    check("password", "The password is required").isLength({ min: 6 }),
+    validateFields,
+  ],
+  createUser
+);
 
 /**
  * @route   POST /api/auth/
@@ -22,7 +35,15 @@ router.post("/new", createUser);
  * @access  Public
  *
  */
-router.post("/", loginUser);
+router.post(
+  "/",
+  [
+    check("email", "The email is required").isEmail(),
+    check("password", "The password is required").isLength({ min: 6 }),
+    validateFields,
+  ],
+  loginUser
+);
 
 /**
  * @route  POST /api/auth/renew

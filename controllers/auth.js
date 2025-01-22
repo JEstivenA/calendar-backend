@@ -1,9 +1,10 @@
 const { response } = require("express");
+const { validationResult } = require("express-validator");
 
 const createUser = async (req, res = response) => {
   const { name, email, password } = req.body;
 
-  res.send({
+  res.status(201).send({
     msg: "New User",
     name,
     email,
@@ -14,7 +15,7 @@ const createUser = async (req, res = response) => {
 const loginUser = async (req, res = response) => {
   const { email, password } = req.body;
 
-  res.send({
+  res.status(201).send({
     msg: "Login User",
     email,
     password,
