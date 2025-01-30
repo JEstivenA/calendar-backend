@@ -29,9 +29,30 @@ const updateEvent = async (req, res = response) => {
   const { id } = req.params;
 
   try {
-    res.status(200).json({ id, message: "updateEvent" });
+    const findEvent = await Event.findById(id);
+
+    if (!findEvent) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+
+    if (findEvent.user.toString() !== req.uid) {
+      return res
+        .status(401)
+        .json({ message: "You don't have permission to edit this event" });
+    }
+
+    const newEvent = {
+      ...req.body,
+      user: req.uid,
+    };
+
+    const eventUpdated = await Event.findByIdAndUpdate(id, newEvent, {
+      new: true,
+    });
+
+    res.status(200).json({ ok: true, message: "updateEvent", eventUpdated });
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
 
@@ -39,7 +60,21 @@ const deleteEvent = async (req, res = response) => {
   const { id } = req.params;
 
   try {
-    res.status(200).json({ id, message: "deleteEvent" });
+    const findEvent = await Event.findById(id);
+
+    if (!findEvent) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+
+    if (findEvent.user.toString() !== req.uid) {
+      return res
+        .status(401)
+        .json({ message: "You don't have permission to delete this event" });
+    }
+
+    await Event.findByIdAndDelete(id);
+
+    res.status(200).json({ ok: true });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }

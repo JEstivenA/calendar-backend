@@ -16,14 +16,14 @@ const validateJWT = (req, res = response, next) => {
     const { uid, name } = jwt.verify(token, process.env.SECRET_JWT_SEED);
     req.uid = uid;
     req.name = name;
+
+    next();
   } catch (error) {
     res.status(401).send({
       ok: false,
       msg: "Invalid token",
     });
   }
-
-  next();
 };
 
 module.exports = {
