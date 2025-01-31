@@ -1,3 +1,5 @@
+const path = require("path");
+
 const express = require("express");
 require("dotenv").config();
 const { dbConnection } = require("./database/config");
@@ -23,6 +25,10 @@ app.use(express.json());
 // * Create all routes
 app.use("/api/auth", require("./routes/auth"));
 app.use("/api/events", require("./routes/events"));
+
+app.use("*", (req, res) => {
+  res.sendFile(__dirname + "/public/index.html");
+});
 
 app.listen(process.env.PORT, () => {
   console.log(`Server is listening on port ${process.env.PORT}`);
